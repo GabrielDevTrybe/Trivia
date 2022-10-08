@@ -33,27 +33,37 @@ class Game extends React.Component {
     }));
   };
 
-  answerOptions = (question) => [
-    {
-      answer: question.correct_answer,
-      correct: true,
-      sort: Math.random(),
-    },
-    question.incorrect_answers.map((answer) => ({
-      answer,
-      correct: false,
-      sort: Math.random(),
-    })),
-  ];
+  answerOptions = (question) => {
+    const correctOption = (
+      <button
+        type="button"
+        key={ uuid() }
+        data-testid="correct-answer"
+        onClick={ this.handleClick }
+      >
+        {question.correct_answer}
+      </button>);
+    const incorrectOptions = question.incorrect_answers
+      .map((option, index) => (
+        <button
+          type="button"
+          key={ uuid() }
+          data-testid={ `wrong-answer-${index}` }
+          onClick={ this.handleClick }
+        >
+          {option}
+        </button>
+      ));
+    return [correctOption, ...incorrectOptions];
+  };
 
   render() {
     const { gameQuestions } = this.props;
     const { questionsIndex } = this.state;
     if (questionsIndex < gameQuestions.length) {
       const answersArray = this.answerOptions(gameQuestions[questionsIndex]);
-      const shuffledArray = answersArray
-        .map((question) => ({ question, sort: Math.random() }))
-        .sort((a, b) => a.sort - b.sort);
+      const shuffleNumber = 0.5;
+      const shuffledArray = answersArray.sort(() => Math.random() - shuffleNumber);
       return (
         <div>
           <h3
@@ -62,24 +72,9 @@ class Game extends React.Component {
             {gameQuestions[questionsIndex].category}
           </h3>
           <p data-testid="question-text">{gameQuestions[questionsIndex].question}</p>
-          {/* <div data-testid="answer-options">
-            <button
-              type="button"
-              data-testid="correct-answer"
-              onClick={ this.handleClick }
-            >
-              {gameQuestions[questionsIndex].correct_answer}
-            </button>
-            {gameQuestions[questionsIndex].incorrect_answers.map((answer, index) => (
-              <button
-                type="button"
-                key={ uuid() }
-                data-testid={ `wrong-answer-${index}` }
-                onClick={ this.handleClick }
-              >
-                {answer}
-              </button>))}
-          </div> */}
+          <div data-testid="answer-options">
+            {shuffledArray.map((option) => option)}
+          </div>
         </div>
       );
     }
