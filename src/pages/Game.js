@@ -7,7 +7,7 @@ import { saveQuestionsAction } from '../redux/actions';
 class Game extends React.Component {
   state = {
     questionsIndex: 0,
-    // answerOptionsIndex: 0,
+    revealOptions: false,
   };
 
   componentDidMount() {
@@ -29,17 +29,22 @@ class Game extends React.Component {
 
   handleClick = () => {
     this.setState((prevState) => ({
+      revealOptions: true,
       questionsIndex: prevState.questionsIndex + 1,
     }));
   };
 
   answerOptions = (question) => {
+    const { revealOptions } = this.state;
     const correctOption = (
       <button
         type="button"
         key={ uuid() }
         data-testid="correct-answer"
         onClick={ this.handleClick }
+        style={ {
+          border: revealOptions ? '3px solid rgb(6, 240, 15)' : '',
+        } }
       >
         {question.correct_answer}
       </button>);
@@ -50,6 +55,9 @@ class Game extends React.Component {
           key={ uuid() }
           data-testid={ `wrong-answer-${index}` }
           onClick={ this.handleClick }
+          style={ {
+            border: revealOptions ? '3px solid red' : '',
+          } }
         >
           {option}
         </button>
