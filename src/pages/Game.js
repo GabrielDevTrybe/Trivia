@@ -8,6 +8,7 @@ class Game extends React.Component {
   state = {
     questionsIndex: 0,
     revealOptions: false,
+    disabledButton: false,
   };
 
   componentDidMount() {
@@ -35,7 +36,7 @@ class Game extends React.Component {
   };
 
   answerOptions = (question) => {
-    const { revealOptions } = this.state;
+    const { revealOptions, disabledButton } = this.state;
     const correctOption = (
       <button
         type="button"
@@ -45,6 +46,7 @@ class Game extends React.Component {
         style={ {
           border: revealOptions ? '3px solid rgb(6, 240, 15)' : '',
         } }
+        disabled={ disabledButton }
       >
         {question.correct_answer}
       </button>);
@@ -58,6 +60,7 @@ class Game extends React.Component {
           style={ {
             border: revealOptions ? '3px solid red' : '',
           } }
+          disabled={ disabledButton }
         >
           {option}
         </button>
@@ -68,6 +71,7 @@ class Game extends React.Component {
   render() {
     const { gameQuestions } = this.props;
     const { questionsIndex } = this.state;
+    const questionTimer = 30000;
     if (questionsIndex < gameQuestions.length) {
       const answersArray = this.answerOptions(gameQuestions[questionsIndex]);
       const shuffleNumber = 0.5;
@@ -83,6 +87,12 @@ class Game extends React.Component {
           <div data-testid="answer-options">
             {shuffledArray.map((option) => option)}
           </div>
+          {setTimeout(() => {
+            this.setState({
+              revealOptions: true,
+              disabledButton: true,
+            });
+          }, questionTimer)}
         </div>
       );
     }
