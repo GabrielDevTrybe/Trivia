@@ -7,27 +7,24 @@ import { saveQuestionsAction } from '../redux/actions';
 class Game extends React.Component {
   state = {
     questionsIndex: 0,
+    // answerOptionsIndex: 0,
   };
 
   componentDidMount() {
-    const { history } = this.props;
-    const token = localStorage.getItem('token');
-    if (token === {
-      response_code: 3,
-      results: [],
-    }) {
-      localStorage.removeItem('token');
-      history.push('/');
-    } else {
-      this.fetchAPI(token);
-    }
+    this.fetchAPI();
   }
 
-  fetchAPI = async (token) => {
-    const { saveQuestionsDispatch } = this.props;
+  fetchAPI = async () => {
+    const { saveQuestionsDispatch, history } = this.props;
+    const token = localStorage.getItem('token');
     const resolve = await fetch(`https://opentdb.com/api.php?amount=5&token=${token}`);
     const data = await resolve.json();
-    saveQuestionsDispatch(data);
+    if (data.response_code === 0) {
+      saveQuestionsDispatch(data.results);
+    } else {
+      localStorage.removeItem('token');
+      history.push('/');
+    }
   };
 
   handleClick = () => {
@@ -36,10 +33,27 @@ class Game extends React.Component {
     }));
   };
 
+  answerOptions = (question) => [
+    {
+      answer: question.correct_answer,
+      correct: true,
+      sort: Math.random(),
+    },
+    question.incorrect_answers.map((answer) => ({
+      answer,
+      correct: false,
+      sort: Math.random(),
+    })),
+  ];
+
   render() {
     const { gameQuestions } = this.props;
     const { questionsIndex } = this.state;
     if (questionsIndex < gameQuestions.length) {
+      const answersArray = this.answerOptions(gameQuestions[questionsIndex]);
+      const shuffledArray = answersArray
+        .map((question) => ({ question, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort);
       return (
         <div>
           <h3
@@ -48,15 +62,15 @@ class Game extends React.Component {
             {gameQuestions[questionsIndex].category}
           </h3>
           <p data-testid="question-text">{gameQuestions[questionsIndex].question}</p>
-          <div>
+          {/* <div data-testid="answer-options">
             <button
               type="button"
               data-testid="correct-answer"
               onClick={ this.handleClick }
             >
-              {gameQuestions[i].correct_answer}
+              {gameQuestions[questionsIndex].correct_answer}
             </button>
-            {gameQuestions[i].incorrect_answers.map((answer, index) => (
+            {gameQuestions[questionsIndex].incorrect_answers.map((answer, index) => (
               <button
                 type="button"
                 key={ uuid() }
@@ -65,7 +79,7 @@ class Game extends React.Component {
               >
                 {answer}
               </button>))}
-          </div>
+          </div> */}
         </div>
       );
     }
@@ -82,6 +96,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 Game.propTypes = {
   gameQuestions: PropTypes.array,
+  history: PropTypes.func,
 }.isRequired;
 
 export default connect(mapStateToProps, mapDispatchToProps)(Game);
