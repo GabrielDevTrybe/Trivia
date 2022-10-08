@@ -24,9 +24,10 @@ class Game extends React.Component {
   }
 
   fetchAPI = async (token) => {
+    const { saveQuestionsDispatch } = this.props;
     const resolve = await fetch(`https://opentdb.com/api.php?amount=5&token=${token}`);
     const data = await resolve.json();
-    dispatch(saveQuestionsAction(data));
+    saveQuestionsDispatch(data);
   };
 
   handleClick = () => {
@@ -75,8 +76,12 @@ const mapStateToProps = (state) => ({
   gameQuestions: state.questionReducer.game.questions,
 });
 
+const mapDispatchToProps = (dispatch) => ({
+  saveQuestionsDispatch: (data) => dispatch(saveQuestionsAction(data)),
+});
+
 Game.propTypes = {
   gameQuestions: PropTypes.array,
 }.isRequired;
 
-export default connect(mapStateToProps)(Game);
+export default connect(mapStateToProps, mapDispatchToProps)(Game);

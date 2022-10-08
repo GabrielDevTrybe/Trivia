@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { PropTypes } from 'prop-types';
 
 export default class Login extends Component {
   state = {
     email: '',
     name: '',
-
     btnDisable: true,
   };
 
@@ -23,10 +23,17 @@ export default class Login extends Component {
     }
   };
 
+  fetchToken = async () => {
+    const { history } = this.props;
+    const response = await fetch('https://opentdb.com/api_token.php?command=request');
+    const request = await response.json();
+    localStorage.setItem('token', request.token);
+    history.push('/game');
+  };
+
   render() {
     const { btnDisable, email, name } = this.state;
     return (
-
       <form>
         <label htmlFor="name">
           Name:
@@ -51,6 +58,7 @@ export default class Login extends Component {
           type="button"
           data-testid="btn-play"
           disabled={ btnDisable }
+          onClick={ this.fetchToken }
         >
           Play
         </button>
@@ -66,3 +74,7 @@ export default class Login extends Component {
     );
   }
 }
+
+Login.propTypes = {
+  history: PropTypes.func,
+}.isRequired;
