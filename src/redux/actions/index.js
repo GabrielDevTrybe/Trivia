@@ -1,4 +1,10 @@
+export const SAVE_QUESTIONS = 'SAVE_QUESTIONS';
 export const GET_REQUEST = 'GET_REQUEST';
+
+export const saveQuestionsAction = (payload) => ({
+  type: SAVE_QUESTIONS,
+  payload,
+});
 
 export const responseApi = (payload) => ({
   type: GET_API,
