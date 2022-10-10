@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import uuid from 'react-uuid';
 import { connect } from 'react-redux';
 import { saveQuestionsAction } from '../redux/actions';
+import Header from '../components/Header';
 
 class Game extends React.Component {
   state = {
@@ -74,6 +75,7 @@ class Game extends React.Component {
       const shuffledArray = answersArray.sort(() => Math.random() - shuffleNumber);
       return (
         <div>
+          <Header />
           <h3
             data-testid="question-category"
           >
