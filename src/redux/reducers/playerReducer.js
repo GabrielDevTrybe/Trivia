@@ -1,4 +1,4 @@
-import { GET_SCORE, SAVE_QUESTIONS } from '../actions';
+import { GET_ASSERTIONS, GET_SCORE, SAVE_QUESTIONS } from '../actions';
 
 const INITIAL_STATE = {
   game: {
@@ -6,6 +6,7 @@ const INITIAL_STATE = {
     buttonsOptions: [],
   },
   score: 0,
+  assertions: 0,
 };
 
 const player = (state = INITIAL_STATE, action) => {
@@ -22,6 +23,11 @@ const player = (state = INITIAL_STATE, action) => {
     return {
       ...state,
       score: action.payload,
+    };
+  case GET_ASSERTIONS:
+    return {
+      ...state,
+      assertions: action.payload,
     };
   default:
     return state;

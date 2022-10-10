@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import uuid from 'react-uuid';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { saveQuestionsAction, getScore } from '../redux/actions';
+import { saveQuestionsAction, getScore, getAssertions } from '../redux/actions';
 import Header from '../components/Header';
 
 class Game extends React.Component {
@@ -14,6 +14,7 @@ class Game extends React.Component {
     buttonNext: false,
     countdown: 30,
     intervalId: '',
+    assertions: 0,
   };
 
   componentDidMount() {
@@ -65,6 +66,9 @@ class Game extends React.Component {
     const hardPoints = 3;
 
     if (correct === 'correct-answer') {
+      this.setState((prevState) => ({
+        assertions: prevState.assertions + 1,
+      }));
       switch (difficulty) {
       case 'easy':
         return score + defaultPoints + (countdown * 1);
@@ -126,8 +130,8 @@ class Game extends React.Component {
   };
 
   handleNextQuestion = () => {
-    const { questionsIndex } = this.state;
-    const { history } = this.props;
+    const { questionsIndex, assertions } = this.state;
+    const { history, getAssertionsDispatch } = this.props;
     const lastQuestionIndex = 4;
     if (questionsIndex < lastQuestionIndex) {
       this.setState((prevState) => ({
@@ -138,6 +142,7 @@ class Game extends React.Component {
         revealOptions: false,
         buttonNext: false,
       });
+      getAssertionsDispatch(assertions);
       history.push('/feedback');
     }
   };
@@ -188,11 +193,13 @@ class Game extends React.Component {
 const mapStateToProps = (state) => ({
   gameQuestions: state.player.game.questions,
   score: state.player.score,
+  assertions: state.player.assertions,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   saveQuestionsDispatch: (data) => dispatch(saveQuestionsAction(data)),
   getScoreDispatch: (score) => dispatch(getScore(score)),
+  getAssertionsDispatch: (assertions) => dispatch(getAssertions(assertions)),
 });
 
 Game.propTypes = {
