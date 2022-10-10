@@ -2,7 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import uuid from 'react-uuid';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { saveQuestionsAction, getScore } from '../redux/actions';
+import Header from '../components/Header';
 
 class Game extends React.Component {
   state = {
@@ -142,6 +144,7 @@ class Game extends React.Component {
       const shuffledArray = answersArray.sort(() => Math.random() - shuffleNumber);
       return (
         <div>
+          <Header />
           <h3
             data-testid="question-category"
           >
@@ -159,6 +162,15 @@ class Game extends React.Component {
               Next
             </button>)}
           {countdown}
+
+          <Link to="/ranking">
+            <button
+              type="button"
+              data-testid="btn-ranking"
+            >
+              Ranking
+            </button>
+          </Link>
         </div>
       );
     }
@@ -166,8 +178,8 @@ class Game extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  gameQuestions: state.questionReducer.game.questions,
-  score: state.questionReducer.player.score,
+  gameQuestions: state.player.game.questions,
+  score: state.player.score,
 });
 
 const mapDispatchToProps = (dispatch) => ({
