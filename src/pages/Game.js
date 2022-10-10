@@ -64,15 +64,6 @@ class Game extends React.Component {
     const defaultPoints = 10;
     const hardPoints = 3;
 
-    // if (difficulty === 'easy') {
-    //   newScore += score + defaultPoints + (countdown * 1);
-    // } else if (difficulty === 'medium') {
-    //   newScore += score + defaultPoints + (countdown * 2);
-    // } else if (difficulty === 'hard') {
-    //   newScore = score + defaultPoints + (countdown * hardPoints);
-    // }
-
-    // getScoreDispatch(newScore);
     if (correct === 'correct-answer') {
       switch (difficulty) {
       case 'easy':
@@ -134,10 +125,26 @@ class Game extends React.Component {
     return [correctOption, ...incorrectOptions];
   };
 
+  handleNextQuestion = () => {
+    const { questionsIndex } = this.state;
+    const { history } = this.props;
+    const lastQuestionIndex = 4;
+    if (questionsIndex < lastQuestionIndex) {
+      this.setState((prevState) => ({
+        questionsIndex: prevState.questionsIndex + 1,
+      }));
+    } else {
+      this.setState({
+        revealOptions: false,
+        buttonNext: false,
+      });
+      history.push('/feedback');
+    }
+  };
+
   render() {
     const { gameQuestions } = this.props;
     const { questionsIndex, buttonNext, countdown } = this.state;
-    // const questionTimer = 30000;
     if (questionsIndex < gameQuestions.length) {
       const answersArray = this.answerOptions(gameQuestions[questionsIndex]);
       const shuffleNumber = 0.5;
@@ -158,6 +165,7 @@ class Game extends React.Component {
             <button
               type="button"
               data-testid="btn-next"
+              onClick={ this.handleNextQuestion }
             >
               Next
             </button>)}
