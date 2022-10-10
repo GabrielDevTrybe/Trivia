@@ -1,6 +1,7 @@
 export const SAVE_QUESTIONS = 'SAVE_QUESTIONS';
 export const GET_REQUEST = 'GET_REQUEST';
-export const SAVE_OPTIONS = 'SAVE_OPTIONS';
+export const GET_SCORE = 'GET_SCORE';
+// export const SAVE_OPTIONS = 'SAVE_OPTIONS';
 
 export const saveQuestionsAction = (payload) => ({
   type: SAVE_QUESTIONS,
@@ -12,8 +13,13 @@ export const responseApi = (payload) => ({
   payload,
 });
 
-export const saveOptions = (payload) => ({
-  type: SAVE_OPTIONS,
+// export const saveOptions = (payload) => ({
+//   type: SAVE_OPTIONS,
+//   payload,
+// });
+
+export const getScore = (payload) => ({
+  type: GET_SCORE,
   payload,
 });
 

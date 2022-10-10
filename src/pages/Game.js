@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import uuid from 'react-uuid';
 import { connect } from 'react-redux';
-import { saveQuestionsAction } from '../redux/actions';
+import { saveQuestionsAction, getScore } from '../redux/actions';
 
 class Game extends React.Component {
   state = {
@@ -54,7 +54,45 @@ class Game extends React.Component {
     }
   };
 
-  handleAnswerClick = () => {
+  handleScore = (correct) => {
+    const { countdown, questionsIndex } = this.state;
+    const { gameQuestions, score } = this.props;
+
+    const { difficulty } = gameQuestions[questionsIndex];
+    const defaultPoints = 10;
+    const hardPoints = 3;
+
+    // if (difficulty === 'easy') {
+    //   newScore += score + defaultPoints + (countdown * 1);
+    // } else if (difficulty === 'medium') {
+    //   newScore += score + defaultPoints + (countdown * 2);
+    // } else if (difficulty === 'hard') {
+    //   newScore = score + defaultPoints + (countdown * hardPoints);
+    // }
+
+    // getScoreDispatch(newScore);
+    if (correct === 'correct-answer') {
+      switch (difficulty) {
+      case 'easy':
+        return score + defaultPoints + (countdown * 1);
+      case 'medium':
+        return score + defaultPoints + (countdown * 2);
+      case 'hard':
+        return score + defaultPoints + (countdown * hardPoints);
+      default:
+        return score;
+      }
+    } else {
+      return score;
+    }
+  };
+
+  handleAnswerClick = (correct) => {
+    const { getScoreDispatch } = this.props;
+
+    const newScore = this.handleScore(correct);
+    getScoreDispatch(newScore);
+
     this.setState({
       revealOptions: true,
       buttonNext: true,
@@ -68,7 +106,7 @@ class Game extends React.Component {
         type="button"
         key={ uuid() }
         data-testid="correct-answer"
-        onClick={ this.handleAnswerClick }
+        onClick={ () => this.handleAnswerClick('correct-answer') }
         style={ {
           border: revealOptions ? '3px solid rgb(6, 240, 15)' : '',
         } }
@@ -129,10 +167,12 @@ class Game extends React.Component {
 
 const mapStateToProps = (state) => ({
   gameQuestions: state.questionReducer.game.questions,
+  score: state.questionReducer.player.score,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   saveQuestionsDispatch: (data) => dispatch(saveQuestionsAction(data)),
+  getScoreDispatch: (score) => dispatch(getScore(score)),
 });
 
 Game.propTypes = {

@@ -1,9 +1,12 @@
-import { SAVE_OPTIONS, SAVE_QUESTIONS } from '../actions';
+import { GET_SCORE, SAVE_QUESTIONS } from '../actions';
 
 const INITIAL_STATE = {
   game: {
     questions: [],
     buttonsOptions: [],
+  },
+  player: {
+    score: 0,
   },
 };
 
@@ -17,12 +20,11 @@ const questionReducer = (state = INITIAL_STATE, action) => {
         questions: action.payload,
       },
     };
-  case SAVE_OPTIONS:
+  case GET_SCORE:
     return {
       ...state,
-      game: {
-        ...state.game,
-        buttonsOptions: action.payload,
+      player: {
+        score: action.payload,
       },
     };
   default:
