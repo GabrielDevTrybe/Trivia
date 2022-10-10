@@ -1,8 +1,9 @@
-import { SAVE_QUESTIONS } from '../actions';
+import { SAVE_OPTIONS, SAVE_QUESTIONS } from '../actions';
 
 const INITIAL_STATE = {
   game: {
     questions: [],
+    buttonsOptions: [],
   },
 };
 
@@ -12,7 +13,16 @@ const questionReducer = (state = INITIAL_STATE, action) => {
     return {
       ...state,
       game: {
+        ...state.game,
         questions: action.payload,
+      },
+    };
+  case SAVE_OPTIONS:
+    return {
+      ...state,
+      game: {
+        ...state.game,
+        buttonsOptions: action.payload,
       },
     };
   default:

@@ -8,10 +8,37 @@ class Game extends React.Component {
   state = {
     questionsIndex: 0,
     revealOptions: false,
+    disabledButton: false,
+    buttonNext: false,
+    countdown: 30,
+    intervalId: '',
   };
 
   componentDidMount() {
     this.fetchAPI();
+
+    const intervalCountdown = 1000;
+    const interval = setInterval(() => {
+      this.setState((prevState) => ({
+        countdown: prevState.countdown - 1,
+      }));
+    }, intervalCountdown);
+    this.setState({ intervalId: interval });
+  }
+
+  componentDidUpdate() {
+    const questionTimer = 30000;
+    setTimeout(() => {
+      this.setState({
+        revealOptions: true,
+        disabledButton: true,
+      });
+    }, questionTimer);
+
+    const { countdown, intervalId } = this.state;
+    if (countdown === 0) {
+      clearInterval(intervalId);
+    }
   }
 
   fetchAPI = async () => {
@@ -27,24 +54,25 @@ class Game extends React.Component {
     }
   };
 
-  handleClick = () => {
-    this.setState((prevState) => ({
+  handleAnswerClick = () => {
+    this.setState({
       revealOptions: true,
-      questionsIndex: prevState.questionsIndex + 1,
-    }));
+      buttonNext: true,
+    });
   };
 
   answerOptions = (question) => {
-    const { revealOptions } = this.state;
+    const { revealOptions, disabledButton } = this.state;
     const correctOption = (
       <button
         type="button"
         key={ uuid() }
         data-testid="correct-answer"
-        onClick={ this.handleClick }
+        onClick={ this.handleAnswerClick }
         style={ {
           border: revealOptions ? '3px solid rgb(6, 240, 15)' : '',
         } }
+        disabled={ disabledButton }
       >
         {question.correct_answer}
       </button>);
@@ -54,10 +82,11 @@ class Game extends React.Component {
           type="button"
           key={ uuid() }
           data-testid={ `wrong-answer-${index}` }
-          onClick={ this.handleClick }
+          onClick={ this.handleAnswerClick }
           style={ {
             border: revealOptions ? '3px solid red' : '',
           } }
+          disabled={ disabledButton }
         >
           {option}
         </button>
@@ -67,7 +96,8 @@ class Game extends React.Component {
 
   render() {
     const { gameQuestions } = this.props;
-    const { questionsIndex } = this.state;
+    const { questionsIndex, buttonNext, countdown } = this.state;
+    // const questionTimer = 30000;
     if (questionsIndex < gameQuestions.length) {
       const answersArray = this.answerOptions(gameQuestions[questionsIndex]);
       const shuffleNumber = 0.5;
@@ -83,6 +113,14 @@ class Game extends React.Component {
           <div data-testid="answer-options">
             {shuffledArray.map((option) => option)}
           </div>
+          {buttonNext && (
+            <button
+              type="button"
+              data-testid="btn-next"
+            >
+              Next
+            </button>)}
+          {countdown}
         </div>
       );
     }

@@ -1,5 +1,6 @@
 export const SAVE_QUESTIONS = 'SAVE_QUESTIONS';
 export const GET_REQUEST = 'GET_REQUEST';
+export const SAVE_OPTIONS = 'SAVE_OPTIONS';
 
 export const saveQuestionsAction = (payload) => ({
   type: SAVE_QUESTIONS,
@@ -8,6 +9,11 @@ export const saveQuestionsAction = (payload) => ({
 
 export const responseApi = (payload) => ({
   type: GET_API,
+  payload,
+});
+
+export const saveOptions = (payload) => ({
+  type: SAVE_OPTIONS,
   payload,
 });
 
