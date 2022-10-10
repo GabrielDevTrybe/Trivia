@@ -9,6 +9,7 @@ class Game extends React.Component {
     questionsIndex: 0,
     revealOptions: false,
     disabledButton: false,
+    buttonNext: false,
   };
 
   componentDidMount() {
@@ -28,11 +29,11 @@ class Game extends React.Component {
     }
   };
 
-  handleClick = () => {
-    this.setState((prevState) => ({
+  handleAnswerClick = () => {
+    this.setState({
       revealOptions: true,
-      questionsIndex: prevState.questionsIndex + 1,
-    }));
+      buttonNext: true,
+    });
   };
 
   answerOptions = (question) => {
@@ -42,7 +43,7 @@ class Game extends React.Component {
         type="button"
         key={ uuid() }
         data-testid="correct-answer"
-        onClick={ this.handleClick }
+        onClick={ this.handleAnswerClick }
         style={ {
           border: revealOptions ? '3px solid rgb(6, 240, 15)' : '',
         } }
@@ -56,7 +57,7 @@ class Game extends React.Component {
           type="button"
           key={ uuid() }
           data-testid={ `wrong-answer-${index}` }
-          onClick={ this.handleClick }
+          onClick={ this.handleAnswerClick }
           style={ {
             border: revealOptions ? '3px solid red' : '',
           } }
@@ -70,7 +71,7 @@ class Game extends React.Component {
 
   render() {
     const { gameQuestions } = this.props;
-    const { questionsIndex } = this.state;
+    const { questionsIndex, buttonNext } = this.state;
     const questionTimer = 30000;
     if (questionsIndex < gameQuestions.length) {
       const answersArray = this.answerOptions(gameQuestions[questionsIndex]);
@@ -87,6 +88,13 @@ class Game extends React.Component {
           <div data-testid="answer-options">
             {shuffledArray.map((option) => option)}
           </div>
+          {buttonNext && (
+            <button
+              type="button"
+              data-testid="btn-next"
+            >
+              Next
+            </button>)}
           {setTimeout(() => {
             this.setState({
               revealOptions: true,
