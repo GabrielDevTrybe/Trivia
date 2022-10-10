@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 class Header extends React.Component {
   render() {
     const { email, name, score } = this.props;
-    console.log(score);
     return (
       <div>
         <img data-testid="header-profile-picture" src={ `https://www.gravatar.com/avatar/${email}` } alt="user-avatar" />
