@@ -10,10 +10,35 @@ class Game extends React.Component {
     revealOptions: false,
     disabledButton: false,
     buttonNext: false,
+    countdown: 30,
+    intervalId: '',
   };
 
   componentDidMount() {
     this.fetchAPI();
+
+    const intervalCountdown = 1000;
+    const interval = setInterval(() => {
+      this.setState((prevState) => ({
+        countdown: prevState.countdown - 1,
+      }));
+    }, intervalCountdown);
+    this.setState({ intervalId: interval });
+  }
+
+  componentDidUpdate() {
+    const questionTimer = 30000;
+    setTimeout(() => {
+      this.setState({
+        revealOptions: true,
+        disabledButton: true,
+      });
+    }, questionTimer);
+
+    const { countdown, intervalId } = this.state;
+    if (countdown === 0) {
+      clearInterval(intervalId);
+    }
   }
 
   fetchAPI = async () => {
@@ -71,8 +96,8 @@ class Game extends React.Component {
 
   render() {
     const { gameQuestions } = this.props;
-    const { questionsIndex, buttonNext } = this.state;
-    const questionTimer = 30000;
+    const { questionsIndex, buttonNext, countdown } = this.state;
+    // const questionTimer = 30000;
     if (questionsIndex < gameQuestions.length) {
       const answersArray = this.answerOptions(gameQuestions[questionsIndex]);
       const shuffleNumber = 0.5;
@@ -95,12 +120,7 @@ class Game extends React.Component {
             >
               Next
             </button>)}
-          {setTimeout(() => {
-            this.setState({
-              revealOptions: true,
-              disabledButton: true,
-            });
-          }, questionTimer)}
+          {countdown}
         </div>
       );
     }
