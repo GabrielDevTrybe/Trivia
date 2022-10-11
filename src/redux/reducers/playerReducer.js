@@ -1,13 +1,15 @@
-import { SAVE_OPTIONS, SAVE_QUESTIONS } from '../actions';
+import { GET_ASSERTIONS, GET_SCORE, SAVE_QUESTIONS } from '../actions';
 
 const INITIAL_STATE = {
   game: {
     questions: [],
     buttonsOptions: [],
   },
+  score: 0,
+  assertions: 0,
 };
 
-const questionReducer = (state = INITIAL_STATE, action) => {
+const player = (state = INITIAL_STATE, action) => {
   switch (action.type) {
   case SAVE_QUESTIONS:
     return {
@@ -17,17 +19,19 @@ const questionReducer = (state = INITIAL_STATE, action) => {
         questions: action.payload,
       },
     };
-  case SAVE_OPTIONS:
+  case GET_SCORE:
     return {
       ...state,
-      game: {
-        ...state.game,
-        buttonsOptions: action.payload,
-      },
+      score: action.payload,
+    };
+  case GET_ASSERTIONS:
+    return {
+      ...state,
+      assertions: action.payload,
     };
   default:
     return state;
   }
 };
 
-export default questionReducer;
+export default player;

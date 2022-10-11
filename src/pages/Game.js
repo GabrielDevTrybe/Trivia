@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import uuid from 'react-uuid';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { saveQuestionsAction } from '../redux/actions';
+import { saveQuestionsAction, getScore, getAssertions } from '../redux/actions';
 import Header from '../components/Header';
 
 class Game extends React.Component {
@@ -14,6 +14,7 @@ class Game extends React.Component {
     buttonNext: false,
     countdown: 30,
     intervalId: '',
+    assertions: 0,
   };
 
   componentDidMount() {
@@ -56,7 +57,39 @@ class Game extends React.Component {
     }
   };
 
-  handleAnswerClick = () => {
+  handleScore = (correct) => {
+    const { countdown, questionsIndex } = this.state;
+    const { gameQuestions, score } = this.props;
+
+    const { difficulty } = gameQuestions[questionsIndex];
+    const defaultPoints = 10;
+    const hardPoints = 3;
+
+    if (correct === 'correct-answer') {
+      this.setState((prevState) => ({
+        assertions: prevState.assertions + 1,
+      }));
+      switch (difficulty) {
+      case 'easy':
+        return score + defaultPoints + (countdown * 1);
+      case 'medium':
+        return score + defaultPoints + (countdown * 2);
+      case 'hard':
+        return score + defaultPoints + (countdown * hardPoints);
+      default:
+        return score;
+      }
+    } else {
+      return score;
+    }
+  };
+
+  handleAnswerClick = (correct) => {
+    const { getScoreDispatch } = this.props;
+
+    const newScore = this.handleScore(correct);
+    getScoreDispatch(newScore);
+
     this.setState({
       revealOptions: true,
       buttonNext: true,
@@ -70,7 +103,7 @@ class Game extends React.Component {
         type="button"
         key={ uuid() }
         data-testid="correct-answer"
-        onClick={ this.handleAnswerClick }
+        onClick={ () => this.handleAnswerClick('correct-answer') }
         style={ {
           border: revealOptions ? '3px solid rgb(6, 240, 15)' : '',
         } }
@@ -96,10 +129,27 @@ class Game extends React.Component {
     return [correctOption, ...incorrectOptions];
   };
 
+  handleNextQuestion = () => {
+    const { questionsIndex, assertions } = this.state;
+    const { history, getAssertionsDispatch } = this.props;
+    const lastQuestionIndex = 4;
+    if (questionsIndex < lastQuestionIndex) {
+      this.setState((prevState) => ({
+        questionsIndex: prevState.questionsIndex + 1,
+      }));
+    } else {
+      this.setState({
+        revealOptions: false,
+        buttonNext: false,
+      });
+      getAssertionsDispatch(assertions);
+      history.push('/feedback');
+    }
+  };
+
   render() {
     const { gameQuestions } = this.props;
     const { questionsIndex, buttonNext, countdown } = this.state;
-    // const questionTimer = 30000;
     if (questionsIndex < gameQuestions.length) {
       const answersArray = this.answerOptions(gameQuestions[questionsIndex]);
       const shuffleNumber = 0.5;
@@ -120,6 +170,7 @@ class Game extends React.Component {
             <button
               type="button"
               data-testid="btn-next"
+              onClick={ this.handleNextQuestion }
             >
               Next
             </button>)}
@@ -140,11 +191,15 @@ class Game extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  gameQuestions: state.questionReducer.game.questions,
+  gameQuestions: state.player.game.questions,
+  score: state.player.score,
+  assertions: state.player.assertions,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   saveQuestionsDispatch: (data) => dispatch(saveQuestionsAction(data)),
+  getScoreDispatch: (score) => dispatch(getScore(score)),
+  getAssertionsDispatch: (assertions) => dispatch(getAssertions(assertions)),
 });
 
 Game.propTypes = {
