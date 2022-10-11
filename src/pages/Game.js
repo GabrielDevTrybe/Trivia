@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import uuid from 'react-uuid';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { saveQuestionsAction, getScore, getAssertions } from '../redux/actions';
 import Header from '../components/Header';
 
@@ -175,15 +174,6 @@ class Game extends React.Component {
               Next
             </button>)}
           {countdown}
-
-          <Link to="/ranking">
-            <button
-              type="button"
-              data-testid="btn-ranking"
-            >
-              Ranking
-            </button>
-          </Link>
         </div>
       );
     }
