@@ -8,6 +8,7 @@ import Header from '../components/Header';
 class Game extends React.Component {
   state = {
     questionsIndex: 0,
+    nextQuestionIndex: 0,
     revealOptions: false,
     disabledButton: false,
     buttonNext: false,
@@ -143,29 +144,31 @@ class Game extends React.Component {
   // return [correctOption, ...incorrectOptions];
 
   handleNextQuestion = () => {
-    const { questionsIndex, assertions } = this.state;
-    // se não der certo, testar com let, em vez de const
+    const { assertions, questionsIndex } = this.state;
     const { history, getAssertionsDispatch } = this.props;
     const lastQuestionIndex = 4;
-    if (questionsIndex < lastQuestionIndex) {
-      this.setState((prevState) => ({
-        questionsIndex: prevState.questionsIndex + 1,
-        disabledButton: false,
-      }));
-      const { questionsIndex, gameQuestions } = this.state;
-      const answersArray = this.answerOptions(gameQuestions[questionsIndex]);
-      const shuffleNumber = 0.5;
-      const shuffledOptions = answersArray.sort(() => Math.random() - shuffleNumber);
-      this.setState({
-        shuffledOptions,
-      }, () => console.log(shuffledOptions));
-    } else {
+    if (questionsIndex === lastQuestionIndex) {
       this.setState({
         revealOptions: false,
         buttonNext: false,
       });
       getAssertionsDispatch(assertions);
       history.push('/feedback');
+    } else {
+      this.setState((prevState) => ({
+        questionsIndex: prevState.questionsIndex + 1,
+        nextQuestionIndex: prevState.nextQuestionIndex + 1,
+        disabledButton: false,
+        revealOptions: false,
+      }), () => {
+        const { nextQuestionIndex, gameQuestions } = this.state;
+        const answersArray = this.answerOptions(gameQuestions[nextQuestionIndex]);
+        const shuffleNumber = 0.5;
+        const shuffledOptions = answersArray.sort(() => Math.random() - shuffleNumber);
+        this.setState({
+          shuffledOptions,
+        }, () => console.log(shuffledOptions));
+      });
     }
   };
 
