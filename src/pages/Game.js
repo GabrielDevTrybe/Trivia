@@ -66,13 +66,12 @@ class Game extends React.Component {
         gameQuestions: data.results,
       }, () => {
         const { gameQuestions, questionsIndex } = this.state;
-        console.log(gameQuestions);
         const answersArray = this.answerOptions(gameQuestions[questionsIndex]);
         const shuffleNumber = 0.5;
         const shuffledOptions = answersArray.sort(() => Math.random() - shuffleNumber);
         this.setState({
           shuffledOptions,
-        }, () => console.log(shuffledOptions));
+        });
       });
     } else {
       localStorage.removeItem('token');
@@ -151,7 +150,7 @@ class Game extends React.Component {
         const shuffledOptions = answersArray.sort(() => Math.random() - shuffleNumber);
         this.setState({
           shuffledOptions,
-        }, () => console.log(shuffledOptions));
+        });
       });
       this.handleIntervalCountdown();
       clearTimeout(timeoutId);
