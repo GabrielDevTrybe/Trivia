@@ -39,7 +39,7 @@ class Login extends Component {
     const { btnDisable, email, name } = this.state;
     return (
       <form>
-        <label htmlFor="name">
+        <label htmlFor="name" className="nome">
           Name:
           <input
             name="name"
@@ -49,7 +49,7 @@ class Login extends Component {
           />
         </label>
 
-        <label htmlFor="email">
+        <label htmlFor="email" className="email">
           Email:
           <input
             name="email"
@@ -58,22 +58,24 @@ class Login extends Component {
             value={ email }
           />
         </label>
-        <button
-          type="button"
-          data-testid="btn-play"
-          disabled={ btnDisable }
-          onClick={ this.fetchToken }
-        >
-          Play
-        </button>
-        <Link to="/settings">
+        <div className="loginBotões">
           <button
             type="button"
-            data-testid="btn-settings"
+            data-testid="btn-play"
+            disabled={ btnDisable }
+            onClick={ this.fetchToken }
           >
-            Settings
+            Play
           </button>
-        </Link>
+          <Link to="/settings">
+            <button
+              type="button"
+              data-testid="btn-settings"
+            >
+              Settings
+            </button>
+          </Link>
+        </div>
       </form>
     );
   }

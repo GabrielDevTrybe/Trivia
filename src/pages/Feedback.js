@@ -11,32 +11,35 @@ class Feedback extends React.Component {
     return (
       <div>
         <Header />
-        <p data-testid="feedback-text">
+        <h2 data-testid="feedback-text" className="final">
           {assertions < feedbackLimit ? 'Could be better...' : 'Well Done!'}
-        </p>
-        <p data-testid="feedback-total-score">
+        </h2>
+        <p data-testid="feedback-total-score" className="final">
           {score}
         </p>
-        <p data-testid="feedback-total-question">
+        <p data-testid="feedback-total-question" className="final">
           {assertions}
         </p>
-        <Link to="/">
-          <button
-            type="button"
-            data-testid="btn-play-again"
-          >
-            Play Again
-          </button>
-        </Link>
-
-        <Link to="/ranking">
-          <button
-            type="button"
-            data-testid="btn-ranking"
-          >
-            Ranking
-          </button>
-        </Link>
+        <div className="playAgain">
+          <Link to="/">
+            <button
+              type="button"
+              data-testid="btn-play-again"
+            >
+              Play Again
+            </button>
+          </Link>
+        </div>
+        <div className="rank">
+          <Link to="/ranking">
+            <button
+              type="button"
+              data-testid="btn-ranking"
+            >
+              Ranking
+            </button>
+          </Link>
+        </div>
       </div>
     );
   }
