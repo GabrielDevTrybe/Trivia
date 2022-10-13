@@ -2,23 +2,51 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import uuid from 'react-uuid';
 import { connect } from 'react-redux';
-import { saveQuestionsAction, getScore, getAssertions } from '../redux/actions';
+import { getScore, getAssertions } from '../redux/actions';
 import Header from '../components/Header';
 
 class Game extends React.Component {
   state = {
     questionsIndex: 0,
+    nextQuestionIndex: 0,
     revealOptions: false,
     disabledButton: false,
     buttonNext: false,
     countdown: 30,
     intervalId: '',
+    timeoutId: '',
     assertions: 0,
+    gameQuestions: [],
+    shuffledOptions: [],
   };
 
   componentDidMount() {
     this.fetchAPI();
 
+    this.handleTimeout();
+    this.handleIntervalCountdown();
+  }
+
+  componentDidUpdate() {
+    const { countdown, intervalId } = this.state;
+    if (countdown === 0) {
+      clearInterval(intervalId);
+    }
+  }
+
+  handleTimeout = () => {
+    const questionTimer = 30000;
+    const timeout = setTimeout(() => {
+      this.setState({
+        revealOptions: true,
+        disabledButton: true,
+        buttonNext: true,
+      });
+    }, questionTimer);
+    this.setState({ timeoutId: timeout });
+  };
+
+  handleIntervalCountdown = () => {
     const intervalCountdown = 1000;
     const interval = setInterval(() => {
       this.setState((prevState) => ({
@@ -26,30 +54,25 @@ class Game extends React.Component {
       }));
     }, intervalCountdown);
     this.setState({ intervalId: interval });
-  }
-
-  componentDidUpdate() {
-    const questionTimer = 30000;
-    setTimeout(() => {
-      this.setState({
-        revealOptions: true,
-        disabledButton: true,
-      });
-    }, questionTimer);
-
-    const { countdown, intervalId } = this.state;
-    if (countdown === 0) {
-      clearInterval(intervalId);
-    }
-  }
+  };
 
   fetchAPI = async () => {
-    const { saveQuestionsDispatch, history } = this.props;
+    const { history } = this.props;
     const token = localStorage.getItem('token');
     const resolve = await fetch(`https://opentdb.com/api.php?amount=5&token=${token}`);
     const data = await resolve.json();
     if (data.response_code === 0) {
-      saveQuestionsDispatch(data.results);
+      this.setState({
+        gameQuestions: data.results,
+      }, () => {
+        const { gameQuestions, questionsIndex } = this.state;
+        const answersArray = this.answerOptions(gameQuestions[questionsIndex]);
+        const shuffleNumber = 0.5;
+        const shuffledOptions = answersArray.sort(() => Math.random() - shuffleNumber);
+        this.setState({
+          shuffledOptions,
+        });
+      });
     } else {
       localStorage.removeItem('token');
       history.push('/');
@@ -57,8 +80,12 @@ class Game extends React.Component {
   };
 
   handleScore = (correct) => {
-    const { countdown, questionsIndex } = this.state;
-    const { gameQuestions, score } = this.props;
+    const { countdown, questionsIndex,
+      gameQuestions, intervalId, timeoutId } = this.state;
+    const { score } = this.props;
+
+    clearInterval(intervalId);
+    clearTimeout(timeoutId);
 
     const { difficulty } = gameQuestions[questionsIndex];
     const defaultPoints = 10;
@@ -92,67 +119,55 @@ class Game extends React.Component {
     this.setState({
       revealOptions: true,
       buttonNext: true,
+      disabledButton: true,
     });
   };
 
-  answerOptions = (question) => {
-    const { revealOptions, disabledButton } = this.state;
-    const correctOption = (
-      <button
-        type="button"
-        key={ uuid() }
-        data-testid="correct-answer"
-        onClick={ () => this.handleAnswerClick('correct-answer') }
-        style={ {
-          border: revealOptions ? '3px solid rgb(6, 240, 15)' : '',
-        } }
-        disabled={ disabledButton }
-      >
-        {question.correct_answer}
-      </button>);
-    const incorrectOptions = question.incorrect_answers
-      .map((option, index) => (
-        <button
-          type="button"
-          key={ uuid() }
-          data-testid={ `wrong-answer-${index}` }
-          onClick={ this.handleAnswerClick }
-          style={ {
-            border: revealOptions ? '3px solid red' : '',
-          } }
-          disabled={ disabledButton }
-        >
-          {option}
-        </button>
-      ));
-    return [correctOption, ...incorrectOptions];
-  };
+  answerOptions = (question) => [question.correct_answer, ...question.incorrect_answers];
 
   handleNextQuestion = () => {
-    const { questionsIndex, assertions } = this.state;
+    const { assertions, questionsIndex, timeoutId } = this.state;
     const { history, getAssertionsDispatch } = this.props;
     const lastQuestionIndex = 4;
-    if (questionsIndex < lastQuestionIndex) {
-      this.setState((prevState) => ({
-        questionsIndex: prevState.questionsIndex + 1,
-      }));
-    } else {
+    if (questionsIndex === lastQuestionIndex) {
       this.setState({
         revealOptions: false,
         buttonNext: false,
       });
       getAssertionsDispatch(assertions);
       history.push('/feedback');
+    } else {
+      this.setState((prevState) => ({
+        questionsIndex: prevState.questionsIndex + 1,
+        nextQuestionIndex: prevState.nextQuestionIndex + 1,
+        disabledButton: false,
+        revealOptions: false,
+        countdown: 30,
+      }), () => {
+        const { nextQuestionIndex, gameQuestions } = this.state;
+        const answersArray = this.answerOptions(gameQuestions[nextQuestionIndex]);
+        const shuffleNumber = 0.5;
+        const shuffledOptions = answersArray.sort(() => Math.random() - shuffleNumber);
+        this.setState({
+          shuffledOptions,
+        });
+      });
+      this.handleIntervalCountdown();
+      clearTimeout(timeoutId);
+      this.handleTimeout();
     }
   };
 
+  handleIndexIncorrect = (index) => {
+    index += 1;
+    return index;
+  };
+
   render() {
-    const { gameQuestions } = this.props;
-    const { questionsIndex, buttonNext, countdown } = this.state;
+    const { questionsIndex, buttonNext, countdown,
+      shuffledOptions, revealOptions, gameQuestions, disabledButton } = this.state;
     if (questionsIndex < gameQuestions.length) {
-      const answersArray = this.answerOptions(gameQuestions[questionsIndex]);
-      const shuffleNumber = 0.5;
-      const shuffledArray = answersArray.sort(() => Math.random() - shuffleNumber);
+      const index = -1;
       return (
         <div>
           <Header />
@@ -163,7 +178,38 @@ class Game extends React.Component {
           </h3>
           <p data-testid="question-text">{gameQuestions[questionsIndex].question}</p>
           <div data-testid="answer-options">
-            {shuffledArray.map((option) => option)}
+            {shuffledOptions.map((option) => {
+              if (option === gameQuestions[questionsIndex].correct_answer) {
+                return (
+                  <button
+                    type="button"
+                    key={ uuid() }
+                    data-testid="correct-answer"
+                    onClick={ () => this.handleAnswerClick('correct-answer') }
+                    style={ {
+                      border: revealOptions ? '3px solid rgb(6, 240, 15)' : '',
+                    } }
+                    disabled={ disabledButton }
+                  >
+                    {option}
+                  </button>
+                );
+              }
+              return (
+                <button
+                  type="button"
+                  key={ uuid() }
+                  data-testid={ `wrong-answer-${this.handleIndexIncorrect(index)}` }
+                  onClick={ this.handleAnswerClick }
+                  style={ {
+                    border: revealOptions ? '3px solid red' : '',
+                  } }
+                  disabled={ disabledButton }
+                >
+                  {option}
+                </button>
+              );
+            })}
           </div>
           {buttonNext && (
             <button
@@ -181,19 +227,16 @@ class Game extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  gameQuestions: state.player.game.questions,
   score: state.player.score,
   assertions: state.player.assertions,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  saveQuestionsDispatch: (data) => dispatch(saveQuestionsAction(data)),
   getScoreDispatch: (score) => dispatch(getScore(score)),
   getAssertionsDispatch: (assertions) => dispatch(getAssertions(assertions)),
 });
 
 Game.propTypes = {
-  gameQuestions: PropTypes.array,
   history: PropTypes.func,
 }.isRequired;
 
