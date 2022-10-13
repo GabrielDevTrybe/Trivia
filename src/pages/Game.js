@@ -170,14 +170,20 @@ class Game extends React.Component {
       const index = -1;
       return (
         <div>
-          <Header />
-          <h3
-            data-testid="question-category"
-          >
-            {gameQuestions[questionsIndex].category}
-          </h3>
-          <p data-testid="question-text">{gameQuestions[questionsIndex].question}</p>
-          <div data-testid="answer-options">
+          <div className="perguntas">
+            <Header />
+            <h3
+              data-testid="question-category"
+            >
+              {gameQuestions[questionsIndex].category}
+            </h3>
+            <p
+              data-testid="question-text"
+            >
+              {gameQuestions[questionsIndex].question}
+            </p>
+          </div>
+          <div data-testid="answer-options" className="respostas">
             {shuffledOptions.map((option) => {
               if (option === gameQuestions[questionsIndex].correct_answer) {
                 return (
@@ -213,13 +219,16 @@ class Game extends React.Component {
           </div>
           {buttonNext && (
             <button
+              className="nextQuestion"
               type="button"
               data-testid="btn-next"
               onClick={ this.handleNextQuestion }
             >
               Next
             </button>)}
-          {countdown}
+          <div className="contador">
+            {countdown}
+          </div>
         </div>
       );
     }
@@ -235,9 +244,7 @@ const mapDispatchToProps = (dispatch) => ({
   getScoreDispatch: (score) => dispatch(getScore(score)),
   getAssertionsDispatch: (assertions) => dispatch(getAssertions(assertions)),
 });
-
 Game.propTypes = {
   history: PropTypes.func,
 }.isRequired;
-
 export default connect(mapStateToProps, mapDispatchToProps)(Game);

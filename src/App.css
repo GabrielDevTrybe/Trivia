@@ -1,64 +1,121 @@
 body {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  background-image: url('https://f.i.uol.com.br/fotografia/2021/08/30/1630342579612d0db3bd643_1630342579_3x2_rt.jpg');
+  background-position: top;
+  background-repeat: no-repeat;
+  background-size: 100%;
 }
 
-.App {
+input {
+  border-radius: 5px;
+  font-size: larger;
+  height: 100px;
   text-align: center;
+  width: 400px;
 }
 
-.App-logo {
-  height: 15vmin;
-  pointer-events: none;
-}
-
-.red-border {
-  border: 1px solid red;
-}
-
-.green-border {
-  border: 1px solid green;
-}
-
-@media ( prefers-reduced-motion : no-preference ) {
-
-  .App-logo {
-    animation: shake infinite 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-  }
-}
-
-.App-header {
+.nome {
   align-items: center;
-  background-color: #282c34;
   color: white;
   display: flex;
   flex-direction: column;
-  font-size: calc(10px + 2vmin);
+  padding-top: 20%;
+}
+
+.email {
+  align-items: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.loginBotões {
+  display: flex;
   justify-content: center;
-  min-height: 100vh;
+  margin-top: 10px;
 }
 
-.App-link {
-  color: #61dafb;
+.informaçao {
+  color: papayawhip;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding-bottom: 20px;
 }
 
-@keyframes shake {
-
-  10%, 90% {
-    transform: translate3d(-1px, 0, 0);
-  }
-
-  20%, 80% {
-    transform: translate3d(2px, 0, 0);
-  }
-
-  30%, 50%, 70% {
-    transform: translate3d(-4px, 0, 0);
-  }
-
-  40%, 60% {
-    transform: translate3d(4px, 0, 0);
-  }
+.respostas {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 25px;
 }
 
+button {
+  background-color: rgb(77, 206, 255);
+  border-radius: 50px;
+  font-size: larger;
+  height: 50px;
+  width: 400px;
+}
+
+.playAgain {
+  bottom: 10px;
+  display: flex;
+  justify-content: right;
+  position: fixed;
+  right: 1px;
+}
+
+.nextQuestion {
+  align-items: center;
+  bottom: 10px;
+  display: flex;
+  justify-content: center;
+  position: fixed;
+}
+
+.perguntas {
+  align-items: baseline;
+  color: yellow;
+  font-size: 27px;
+}
+
+.pontos {
+  font-size: 140px;
+  position: absolute;
+  right: 20px;
+  top: -150px;
+}
+
+.foto {
+  left: 15px;
+  padding-bottom: 10px;
+  position: fixed;
+}
+
+.jogador {
+  font-size: 40px;
+}
+
+.contador {
+  color: red;
+  font-size: 40px;
+  padding-top: 20px;
+}
+
+.rank {
+  display: flex;
+  justify-content: center;
+  padding-top: 130px;
+}
+
+.final {
+  color: whitesmoke;
+  display: flex;
+  font-size: 40px;
+  justify-content: center;
+}
+
+.ranking {
+  color: yellow;
+  font-size: 25px;
+}
