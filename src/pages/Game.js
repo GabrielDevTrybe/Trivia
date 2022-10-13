@@ -22,6 +22,8 @@ class Game extends React.Component {
 
   componentDidMount() {
     this.fetchAPI();
+    const { getScoreDispatch } = this.props;
+    getScoreDispatch(0);
 
     this.handleTimeout();
     this.handleIntervalCountdown();
@@ -226,9 +228,7 @@ class Game extends React.Component {
             >
               Next
             </button>)}
-          <div className="contador">
-            {countdown}
-          </div>
+          <div className="contador">{countdown}</div>
         </div>
       );
     }
