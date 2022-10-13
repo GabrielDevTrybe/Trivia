@@ -18,7 +18,8 @@ class Login extends Component {
 
   handleValidate = () => {
     const { email, name } = this.state;
-    if (name && email) {
+    const re = /\S+@\S+\.\S+/;
+    if (name && re.test(email)) {
       this.setState({ btnDisable: false });
     } else {
       this.setState({ btnDisable: true });
